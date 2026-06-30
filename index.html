@@ -5,88 +5,91 @@
 <title>Geheime Nachricht 💖</title>
 
 <style>
-    body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: Georgia, serif;
-        background: radial-gradient(circle at top, #3b0a0a, #120005);
-        color: #ffd6e0;
-        overflow: hidden;
-    }
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Georgia, serif;
+    background: radial-gradient(circle at top, #3b0a0a, #120005);
+    color: #ffd6e0;
+    overflow: hidden;
+}
 
-    .card {
-        width: 420px;
-        padding: 25px;
-        border-radius: 20px;
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 0 25px rgba(255,0,80,0.3);
-        text-align: center;
-        z-index: 2;
-    }
+/* 💖 Card */
+.card {
+    width: 420px;
+    padding: 25px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(255,0,80,0.3);
+    text-align: center;
+    z-index: 2;
+}
 
-    h1 {
-        color: #ff9bb3;
-        margin-bottom: 10px;
-    }
+h1 {
+    color: #ff9bb3;
+}
 
-    textarea, input {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        border-radius: 10px;
-        border: none;
-        outline: none;
-        font-family: monospace;
-    }
+/* Inputs */
+textarea, input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-family: monospace;
+}
 
-    textarea {
-        height: 90px;
-        resize: none;
-    }
+textarea {
+    height: 90px;
+    resize: none;
+}
 
-    button {
-        margin-top: 15px;
-        width: 100%;
-        padding: 10px;
-        border: none;
-        border-radius: 10px;
-        background: linear-gradient(45deg, #ff4d6d, #ff99b6);
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-    }
+/* Button */
+button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #ff4d6d, #ff99b6);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-    button:hover {
-        transform: scale(1.03);
-    }
+button:hover {
+    transform: scale(1.03);
+}
 
-    #output {
-        margin-top: 15px;
-        min-height: 40px;
-        padding: 10px;
-        background: rgba(0,0,0,0.3);
-        border-radius: 10px;
-        white-space: pre-wrap;
-    }
+/* Output */
+#output {
+    margin-top: 15px;
+    min-height: 40px;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    white-space: pre-wrap;
+}
 
-    /* 🌸 optional Flowers */
-    .flower {
-        position: absolute;
-        top: -50px;
-        animation: fall linear forwards;
-        opacity: 0.8;
-        z-index: 1;
-    }
+/* 🌸 Flowers */
+.flower {
+    position: absolute;
+    top: -50px;
+    animation: fall linear forwards;
+    opacity: 0.8;
+    z-index: 1;
+}
 
-    @keyframes fall {
-        to {
-            transform: translateY(110vh);
-        }
+@keyframes fall {
+    to {
+        transform: translateY(110vh);
     }
+}
 </style>
 </head>
 
@@ -95,7 +98,7 @@
 <div class="card">
     <h1>💌 Geheime Nachricht</h1>
 
-    <textarea id="encrypted" placeholder="Verschlüsselte Base64 Nachricht..."></textarea>
+    <textarea id="encrypted" placeholder="Base64 Nachricht..."></textarea>
     <input id="key" placeholder="Schlüssel..." />
 
     <button onclick="decrypt()">Entschlüsseln 💖</button>
@@ -105,49 +108,53 @@
 
 <script>
 
-/* 🌸 OPTIONAL FLOWERS */
+# 💖 SAFE FLOWER SYSTEM (kein Crash mehr)
 function createFlower() {
     const flower = document.createElement("div");
     flower.className = "flower";
 
     const list = ["🌸","🌺","🌷","💮","🌼","💖"];
-    flower.innerHTML = list[Math.floor(Math.random()*list.length)];
+    flower.innerText = list[Math.floor(Math.random() * list.length)];
 
-    flower.style.left = Math.random()*window.innerWidth + "px";
-    flower.style.fontSize = (20 + Math.random()*20) + "px";
-    flower.style.animationDuration = (5 + Math.random()*5) + "s";
+    flower.style.left = Math.random() * window.innerWidth + "px";
+    flower.style.fontSize = (18 + Math.random() * 20) + "px";
+    flower.style.animationDuration = (5 + Math.random() * 5) + "s";
 
     document.body.appendChild(flower);
 
     setTimeout(() => flower.remove(), 10000);
 }
-setInterval(createFlower, 400);
 
+setInterval(createFlower, 500);
 
-/* 🔐 XOR DECRYPT (passt zu deinem Encryptor) */
+# 🔐 XOR DECRYPT (100% passend zu deinem Encryptor)
 function xorDecrypt(base64, key) {
-    const binary = atob(base64);
+    try {
+        const binary = atob(base64);
 
-    const encryptedBytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-        encryptedBytes[i] = binary.charCodeAt(i);
+        const encryptedBytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            encryptedBytes[i] = binary.charCodeAt(i);
+        }
+
+        const encoder = new TextEncoder();
+        const keyBytes = encoder.encode(key);
+
+        const decryptedBytes = new Uint8Array(encryptedBytes.length);
+
+        for (let i = 0; i < encryptedBytes.length; i++) {
+            decryptedBytes[i] =
+                encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+        }
+
+        return new TextDecoder().decode(decryptedBytes);
+
+    } catch (e) {
+        return null;
     }
-
-    const encoder = new TextEncoder();
-    const keyBytes = encoder.encode(key);
-
-    const decryptedBytes = new Uint8Array(encryptedBytes.length);
-
-    for (let i = 0; i < encryptedBytes.length; i++) {
-        decryptedBytes[i] =
-            encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
-    }
-
-    return new TextDecoder().decode(decryptedBytes);
 }
 
-
-/* 💖 UI */
+# 💌 UI FUNCTION (crash-sicher)
 function decrypt() {
     const encrypted = document.getElementById("encrypted").value.trim();
     const key = document.getElementById("key").value;
@@ -158,13 +165,15 @@ function decrypt() {
         return;
     }
 
-    try {
-        const msg = xorDecrypt(encrypted, key);
-        document.getElementById("output").textContent = msg;
-    } catch (e) {
+    const result = xorDecrypt(encrypted, key);
+
+    if (!result) {
         document.getElementById("output").textContent =
-            "❌ Fehler: falscher Schlüssel oder kaputte Nachricht";
+            "❌ Ungültige Nachricht oder falscher Schlüssel";
+        return;
     }
+
+    document.getElementById("output").textContent = result;
 }
 
 </script>
