@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Geheime Liebesnachricht</title>
+
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Georgia", serif;
+        background: radial-gradient(circle at top, #3b0a0a, #120005);
+        color: #ffd6e0;
+    }
+
+    .card {
+        width: 420px;
+        padding: 25px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 25px rgba(255, 0, 80, 0.3);
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 22px;
+        margin-bottom: 10px;
+        color: #ff9bb3;
+    }
+
+    p {
+        font-size: 13px;
+        opacity: 0.8;
+    }
+
+    textarea, input {
+        width: 100%;
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        font-family: monospace;
+    }
+
+    textarea {
+        height: 90px;
+        resize: none;
+    }
+
+    button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(45deg, #ff4d6d, #ff99b6);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(255, 100, 150, 0.6);
+    }
+
+    #output {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(0,0,0,0.3);
+        min-height: 40px;
+        white-space: pre-wrap;
+    }
+
+    .heart {
+        color: #ff4d6d;
+        font-size: 18px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>💌 Geheime Nachricht <span class="heart">❤</span></h1>
+    <p>Gib deine verschlüsselte Botschaft und den Schlüssel ein</p>
+
+    <textarea id="encrypted" placeholder="Verschlüsselte Nachricht..."></textarea>
+    <input id="key" placeholder="Schlüssel..." />
+
+    <button onclick="decrypt()">Entschlüsseln</button>
+
+    <div id="output"></div>
+</div>
+
+<script>
+function xorDecrypt(text, key) {
+    let result = "";
+    for (let i = 0; i < text.length; i++) {
+        result += String.fromCharCode(
+            text.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+        );
+    }
+    return result;
+}
+
+function decrypt() {
+    const text = document.getElementById("encrypted").value;
+    const key = document.getElementById("key").value;
+
+    if (!text || !key) {
+        document.getElementById("output").innerText =
+            "Bitte Nachricht und Schlüssel eingeben ❤";
+        return;
+    }
+
+    try {
+        const decrypted = xorDecrypt(text, key);
+        document.getElementById("output").innerText = decrypted;
+    } catch (e) {
+        document.getElementById("output").innerText =
+            "Fehler beim Entschlüsseln...";
+    }
+}
+</script>
+
+</body>
+</html>
