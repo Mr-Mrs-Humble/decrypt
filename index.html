@@ -17,7 +17,6 @@ body {
     overflow: hidden;
 }
 
-/* 💖 Card */
 .card {
     width: 420px;
     padding: 25px;
@@ -33,7 +32,6 @@ h1 {
     color: #ff9bb3;
 }
 
-/* Inputs */
 textarea, input {
     width: 100%;
     padding: 10px;
@@ -45,11 +43,10 @@ textarea, input {
 }
 
 textarea {
-    height: 90px;
+    height: 100px;
     resize: none;
 }
 
-/* Button */
 button {
     margin-top: 15px;
     width: 100%;
@@ -66,7 +63,6 @@ button:hover {
     transform: scale(1.03);
 }
 
-/* Output */
 #output {
     margin-top: 15px;
     min-height: 40px;
@@ -98,7 +94,7 @@ button:hover {
 <div class="card">
     <h1>💌 Geheime Nachricht</h1>
 
-    <textarea id="encrypted" placeholder="Base64 Nachricht..."></textarea>
+    <textarea id="encrypted" placeholder="Base64 Nachricht hier..."></textarea>
     <input id="key" placeholder="Schlüssel..." />
 
     <button onclick="decrypt()">Entschlüsseln 💖</button>
@@ -108,53 +104,47 @@ button:hover {
 
 <script>
 
-# 💖 SAFE FLOWER SYSTEM (kein Crash mehr)
+# 🌸 Animation (safe)
 function createFlower() {
     const flower = document.createElement("div");
     flower.className = "flower";
 
     const list = ["🌸","🌺","🌷","💮","🌼","💖"];
-    flower.innerText = list[Math.floor(Math.random() * list.length)];
+    flower.innerText = list[Math.floor(Math.random()*list.length)];
 
     flower.style.left = Math.random() * window.innerWidth + "px";
-    flower.style.fontSize = (18 + Math.random() * 20) + "px";
-    flower.style.animationDuration = (5 + Math.random() * 5) + "s";
+    flower.style.fontSize = (18 + Math.random()*20) + "px";
+    flower.style.animationDuration = (5 + Math.random()*5) + "s";
 
     document.body.appendChild(flower);
 
     setTimeout(() => flower.remove(), 10000);
 }
-
 setInterval(createFlower, 500);
 
-# 🔐 XOR DECRYPT (100% passend zu deinem Encryptor)
+# 🔐 XOR DECRYPT (100% kompatibel zu deinem Encryptor)
 function xorDecrypt(base64, key) {
-    try {
-        const binary = atob(base64);
+    const binary = atob(base64);
 
-        const encryptedBytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            encryptedBytes[i] = binary.charCodeAt(i);
-        }
-
-        const encoder = new TextEncoder();
-        const keyBytes = encoder.encode(key);
-
-        const decryptedBytes = new Uint8Array(encryptedBytes.length);
-
-        for (let i = 0; i < encryptedBytes.length; i++) {
-            decryptedBytes[i] =
-                encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
-        }
-
-        return new TextDecoder().decode(decryptedBytes);
-
-    } catch (e) {
-        return null;
+    const encryptedBytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        encryptedBytes[i] = binary.charCodeAt(i);
     }
+
+    const encoder = new TextEncoder();
+    const keyBytes = encoder.encode(key);
+
+    const decryptedBytes = new Uint8Array(encryptedBytes.length);
+
+    for (let i = 0; i < encryptedBytes.length; i++) {
+        decryptedBytes[i] =
+            encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+    }
+
+    return new TextDecoder().decode(decryptedBytes);
 }
 
-# 💌 UI FUNCTION (crash-sicher)
+# 💌 Button Function
 function decrypt() {
     const encrypted = document.getElementById("encrypted").value.trim();
     const key = document.getElementById("key").value;
@@ -165,15 +155,13 @@ function decrypt() {
         return;
     }
 
-    const result = xorDecrypt(encrypted, key);
-
-    if (!result) {
+    try {
+        const msg = xorDecrypt(encrypted, key);
+        document.getElementById("output").textContent = msg;
+    } catch (e) {
         document.getElementById("output").textContent =
-            "❌ Ungültige Nachricht oder falscher Schlüssel";
-        return;
+            "❌ Fehler: falsche Nachricht oder Schlüssel";
     }
-
-    document.getElementById("output").textContent = result;
 }
 
 </script>
