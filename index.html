@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Geheime Nachricht 💖</title>
-
 <style>
 body {
     margin: 0;
@@ -16,7 +15,6 @@ body {
     color: #ffd6e0;
     overflow: hidden;
 }
-
 .card {
     width: 420px;
     padding: 25px;
@@ -27,11 +25,9 @@ body {
     text-align: center;
     z-index: 2;
 }
-
 h1 {
     color: #ff9bb3;
 }
-
 textarea, input {
     width: 100%;
     padding: 10px;
@@ -40,13 +36,12 @@ textarea, input {
     border: none;
     outline: none;
     font-family: monospace;
+    box-sizing: border-box;
 }
-
 textarea {
     height: 100px;
     resize: none;
 }
-
 button {
     margin-top: 15px;
     width: 100%;
@@ -57,12 +52,11 @@ button {
     color: white;
     font-weight: bold;
     cursor: pointer;
+    transition: transform 0.15s ease;
 }
-
 button:hover {
     transform: scale(1.03);
 }
-
 #output {
     margin-top: 15px;
     min-height: 40px;
@@ -71,7 +65,6 @@ button:hover {
     border-radius: 10px;
     white-space: pre-wrap;
 }
-
 /* 🌸 Flowers */
 .flower {
     position: absolute;
@@ -79,8 +72,8 @@ button:hover {
     animation: fall linear forwards;
     opacity: 0.8;
     z-index: 1;
+    pointer-events: none;
 }
-
 @keyframes fall {
     to {
         transform: translateY(110vh);
@@ -88,73 +81,55 @@ button:hover {
 }
 </style>
 </head>
-
 <body>
-
 <div class="card">
     <h1>💌 Geheime Nachricht</h1>
-
     <textarea id="encrypted" placeholder="Base64 Nachricht hier..."></textarea>
     <input id="key" placeholder="Schlüssel..." />
-
     <button onclick="decrypt()">Entschlüsseln 💖</button>
-
     <div id="output"></div>
 </div>
-
 <script>
-
-# 🌸 Animation (safe)
+// 🌸 Animation (safe)
 function createFlower() {
     const flower = document.createElement("div");
     flower.className = "flower";
-
     const list = ["🌸","🌺","🌷","💮","🌼","💖"];
     flower.innerText = list[Math.floor(Math.random()*list.length)];
-
     flower.style.left = Math.random() * window.innerWidth + "px";
     flower.style.fontSize = (18 + Math.random()*20) + "px";
     flower.style.animationDuration = (5 + Math.random()*5) + "s";
-
     document.body.appendChild(flower);
-
     setTimeout(() => flower.remove(), 10000);
 }
 setInterval(createFlower, 500);
 
-# 🔐 XOR DECRYPT (100% kompatibel zu deinem Encryptor)
+// 🔐 XOR DECRYPT (100% kompatibel zu deinem Encryptor)
 function xorDecrypt(base64, key) {
     const binary = atob(base64);
-
     const encryptedBytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
         encryptedBytes[i] = binary.charCodeAt(i);
     }
-
     const encoder = new TextEncoder();
     const keyBytes = encoder.encode(key);
-
     const decryptedBytes = new Uint8Array(encryptedBytes.length);
-
     for (let i = 0; i < encryptedBytes.length; i++) {
         decryptedBytes[i] =
             encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
     }
-
     return new TextDecoder().decode(decryptedBytes);
 }
 
-# 💌 Button Function
+// 💌 Button Function
 function decrypt() {
     const encrypted = document.getElementById("encrypted").value.trim();
     const key = document.getElementById("key").value;
-
     if (!encrypted || !key) {
         document.getElementById("output").textContent =
             "Bitte Nachricht und Schlüssel eingeben ❤️";
         return;
     }
-
     try {
         const msg = xorDecrypt(encrypted, key);
         document.getElementById("output").textContent = msg;
@@ -163,8 +138,6 @@ function decrypt() {
             "❌ Fehler: falsche Nachricht oder Schlüssel";
     }
 }
-
 </script>
-
 </body>
 </html>
