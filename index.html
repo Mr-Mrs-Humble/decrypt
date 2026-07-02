@@ -6,7 +6,7 @@
 <style>
 body {
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -27,11 +27,41 @@ body {
 }
 h1 {
     color: #ff9bb3;
+    margin-top: 0;
+}
+.toggle {
+    display: flex;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 4px;
+    margin-top: 10px;
+}
+.toggle button {
+    flex: 1;
+    margin: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #ffd6e0;
+    font-weight: normal;
+    opacity: 0.7;
+}
+.toggle button.active {
+    background: linear-gradient(45deg, #ff4d6d, #ff99b6);
+    color: white;
+    font-weight: bold;
+    opacity: 1;
+}
+label {
+    display: block;
+    text-align: left;
+    font-size: 13px;
+    margin-top: 12px;
+    opacity: 0.8;
 }
 textarea, input {
     width: 100%;
     padding: 10px;
-    margin-top: 10px;
+    margin-top: 6px;
     border-radius: 10px;
     border: none;
     outline: none;
@@ -57,6 +87,9 @@ button {
 button:hover {
     transform: scale(1.03);
 }
+#action-btn {
+    margin-top: 15px;
+}
 #output {
     margin-top: 15px;
     min-height: 40px;
@@ -64,6 +97,14 @@ button:hover {
     background: rgba(0,0,0,0.3);
     border-radius: 10px;
     white-space: pre-wrap;
+    word-break: break-all;
+    text-align: left;
+}
+.copy-btn {
+    margin-top: 8px;
+    background: rgba(255,255,255,0.15);
+    font-size: 13px;
+    padding: 6px;
 }
 /* 🌸 Flowers */
 .flower {
@@ -84,12 +125,26 @@ button:hover {
 <body>
 <div class="card">
     <h1>💌 Geheime Nachricht</h1>
-    <textarea id="encrypted" placeholder="Base64 Nachricht hier..."></textarea>
+ 
+    <div class="toggle">
+        <button id="mode-encrypt" class="active" onclick="setMode('encrypt')">🔒 Verschlüsseln</button>
+        <button id="mode-decrypt" onclick="setMode('decrypt')">🔓 Entschlüsseln</button>
+    </div>
+ 
+    <label id="input-label" for="input-text">Deine Nachricht:</label>
+    <textarea id="input-text" placeholder="Text hier eingeben..."></textarea>
+ 
+    <label for="key">Schlüssel:</label>
     <input id="key" placeholder="Schlüssel..." />
-    <button onclick="decrypt()">Entschlüsseln 💖</button>
-    <div id="output"></div>
+ 
+    <button id="action-btn" onclick="run()">🔒 Verschlüsseln</button>
+ 
+    <div id="output">Ergebnis erscheint hier ✨</div>
+    <button class="copy-btn" onclick="copyOutput()">📋 Kopieren</button>
 </div>
 <script>
+let mode = "encrypt"; // "encrypt" | "decrypt"
+ 
 // 🌸 Animation (safe)
 function createFlower() {
     const flower = document.createElement("div");
@@ -103,40 +158,88 @@ function createFlower() {
     setTimeout(() => flower.remove(), 10000);
 }
 setInterval(createFlower, 500);
-
-// 🔐 XOR DECRYPT (100% kompatibel zu deinem Encryptor)
+ 
+// 🔐 XOR core (byte-weise, symmetrisch)
+function xorBytes(bytes, key) {
+    const keyBytes = new TextEncoder().encode(key);
+    const result = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) {
+        result[i] = bytes[i] ^ keyBytes[i % keyBytes.length];
+    }
+    return result;
+}
+ 
+// 🔒 Text -> verschlüsselter Base64-String
+function xorEncrypt(text, key) {
+    const bytes = new TextEncoder().encode(text);
+    const encrypted = xorBytes(bytes, key);
+    let binary = "";
+    encrypted.forEach(b => binary += String.fromCharCode(b));
+    return btoa(binary);
+}
+ 
+// 🔓 Base64-String -> ursprünglicher Text
 function xorDecrypt(base64, key) {
     const binary = atob(base64);
-    const encryptedBytes = new Uint8Array(binary.length);
+    const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
-        encryptedBytes[i] = binary.charCodeAt(i);
+        bytes[i] = binary.charCodeAt(i);
     }
-    const encoder = new TextEncoder();
-    const keyBytes = encoder.encode(key);
-    const decryptedBytes = new Uint8Array(encryptedBytes.length);
-    for (let i = 0; i < encryptedBytes.length; i++) {
-        decryptedBytes[i] =
-            encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
-    }
-    return new TextDecoder().decode(decryptedBytes);
+    const decrypted = xorBytes(bytes, key);
+    return new TextDecoder().decode(decrypted);
 }
-
-// 💌 Button Function
-function decrypt() {
-    const encrypted = document.getElementById("encrypted").value.trim();
+ 
+// 🔄 Modus wechseln
+function setMode(newMode) {
+    mode = newMode;
+    document.getElementById("mode-encrypt").classList.toggle("active", mode === "encrypt");
+    document.getElementById("mode-decrypt").classList.toggle("active", mode === "decrypt");
+ 
+    const label = document.getElementById("input-label");
+    const input = document.getElementById("input-text");
+    const btn = document.getElementById("action-btn");
+ 
+    if (mode === "encrypt") {
+        label.textContent = "Deine Nachricht:";
+        input.placeholder = "Text hier eingeben...";
+        btn.textContent = "🔒 Verschlüsseln";
+    } else {
+        label.textContent = "Verschlüsselte Nachricht (Base64):";
+        input.placeholder = "Base64 Nachricht hier...";
+        btn.textContent = "🔓 Entschlüsseln";
+    }
+    document.getElementById("output").textContent = "Ergebnis erscheint hier ✨";
+}
+ 
+// 💌 Hauptfunktion
+function run() {
+    const text = document.getElementById("input-text").value.trim();
     const key = document.getElementById("key").value;
-    if (!encrypted || !key) {
-        document.getElementById("output").textContent =
-            "Bitte Nachricht und Schlüssel eingeben ❤️";
+    const output = document.getElementById("output");
+ 
+    if (!text || !key) {
+        output.textContent = "Bitte Nachricht und Schlüssel eingeben ❤️";
         return;
     }
+ 
     try {
-        const msg = xorDecrypt(encrypted, key);
-        document.getElementById("output").textContent = msg;
+        if (mode === "encrypt") {
+            output.textContent = xorEncrypt(text, key);
+        } else {
+            output.textContent = xorDecrypt(text, key);
+        }
     } catch (e) {
-        document.getElementById("output").textContent =
-            "❌ Fehler: falsche Nachricht oder Schlüssel";
+        output.textContent = "❌ Fehler: falsche Nachricht oder Schlüssel";
     }
+}
+ 
+function copyOutput() {
+    const output = document.getElementById("output");
+    navigator.clipboard.writeText(output.textContent).then(() => {
+        const original = output.textContent;
+        output.textContent = "✅ Kopiert!";
+        setTimeout(() => output.textContent = original, 800);
+    });
 }
 </script>
 </body>
